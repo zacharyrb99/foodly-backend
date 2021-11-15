@@ -1,0 +1,24 @@
+{
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "integer"
+        },
+        "name": {
+            "type": "string"
+        },
+        "instructions": {
+            "type": "string"
+        },
+        "img_url": {
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "id",
+        "name",
+        "instructions",
+        "img_url"
+    ]
+}
