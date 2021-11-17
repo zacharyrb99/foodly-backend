@@ -5,7 +5,7 @@ const { BCRYPT_WORK_FACTOR } = require('../config');
 const { sqlPartialUpdate } = require('../helpers/sql'); 
 
 class User {
-    static async authenticate ({username, password}) {
+    static async authenticate (username, password) {
         const res = await db.query(
             `SELECT username, 
                     password, 
@@ -44,7 +44,7 @@ class User {
             `INSERT INTO users 
             (username, password, first_name, last_name, email)
             VALUES ($1, $2, $3, $4, $5)
-            RETURNING username, password, first_name AS "firstName", last_name AS "lastName", email`, 
+            RETURNING username, first_name AS "firstName", last_name AS "lastName", email`, 
             [username, hashedPassword, firstName, lastName, email]);
 
         const user = res.rows[0];
@@ -71,6 +71,8 @@ class User {
 
     static async update (username, userData) {
         const userPassword = await db.query(`SELECT password FROM users WHERE username = $1`, [username]);
+        if (userPassword.rows.length == 0) throw new NotFoundError(`No user: ${username}`);
+
         const passwordCheck = await bcrypt.compare(userData.password, userPassword.rows[0].password)
 
         if (!passwordCheck) throw new UnauthorizedError("Invalid username/password.");
@@ -91,8 +93,6 @@ class User {
         
         const result = await db.query(sql, [...values, username]);
         const user = result.rows[0];
-        
-        if (!user) throw new NotFoundError(`No user: ${username}`);
 
         delete user.password;
         return user;

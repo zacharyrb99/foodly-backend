@@ -7,10 +7,16 @@ const userAuthSchema = require('../schemas/userAuth.json');
 const userNewSchema = require('../schemas/userNew.json');
 const { BadRequestError } = require('../expressError');
 
+/* 
+    POST /auth/register: {username, password, firstName, lastName, email} => {token}
+
+    Returns token that allows you to authenticate future requests
+
+    Authorization required: None
+*/
+
 router.post("/register", async (req, res, next) => {
-    // return res.status(200).send("Register Page");
     try {
-        console.log(req.body);
         const validator = jsonschema.validate(req.body, userNewSchema);
         if (!validator.valid) {
             const errors = validator.errors.map(e => e.stack);
@@ -25,8 +31,15 @@ router.post("/register", async (req, res, next) => {
     }
 });
 
+/*
+    POST /auth/login: {username, password} => {token}
+
+    Returns token that allows you to authenticate future requests
+
+    Authorization required: None
+*/
+
 router.post("/login", async (req, res, next) => {
-    // return res.status(200).send("Login Page");
     try {
         const validator = jsonschema.validate(req.body, userAuthSchema);
         if (!validator.valid) {
@@ -34,7 +47,7 @@ router.post("/login", async (req, res, next) => {
             throw new BadRequestError(errors);
         }
 
-        const user = await User.authenticate( req.body );
+        const user = await User.authenticate( req.body.username, req.body.password );
         const token = createToken(user);
         return res.json({ token });
     } catch (e) {

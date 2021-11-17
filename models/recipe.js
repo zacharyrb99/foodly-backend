@@ -1,8 +1,11 @@
 const db = require('../db');
-const { NotFoundError } = require('../expressError');
+const { NotFoundError, BadRequestError } = require('../expressError');
 
 class Recipe {
     static async create (data) {
+        const duplicateCheck = await db.query(`SELECT name FROM recipes WHERE name = $1`, [data.name]);
+        if (duplicateCheck.rows[0]) throw new BadRequestError(`Duplicate Recipe: ${data.name}`);
+
         const result = await db.query(
             `INSERT INTO recipes (id, name, instructions, img_url) 
              VALUES ($1, $2, $3, $4) 

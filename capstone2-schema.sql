@@ -9,14 +9,14 @@ CREATE TABLE users (
 
 CREATE TABLE recipes (
     id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
+    name TEXT UNIQUE NOT NULL,
     instructions TEXT NOT NULL,
     img_url TEXT
 );
 
 CREATE TABLE cocktails (
     id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
+    name TEXT UNIQUE NOT NULL,
     instructions TEXT NOT NULL,
     img_url TEXT 
 );
