@@ -7,6 +7,15 @@ const { ensureCorrectUser, ensureLoggedIn } = require("../middleware/auth");
 
 const router = new express.Router();
 
+/*
+    GET /users/:username
+
+    returns data for user given username
+
+    data: {id, username, firstName, lastName, email}
+
+    Authorization: user logged in
+*/
 router.get('/:username', ensureLoggedIn, async (req, res, next) => {
     try {
         const user = await User.get(req.params.username);
@@ -16,6 +25,15 @@ router.get('/:username', ensureLoggedIn, async (req, res, next) => {
     }
 });
 
+/*
+    PATCH /users/:username
+
+    updates a users data given username and updateData
+    
+    returns {username, firstName, lastName, email}
+
+    Authorization: same user as :username
+*/
 router.patch('/:username', ensureCorrectUser, async (req, res, next) => {
     try {
         const validator = jsonschema.validate(req.body, userUpdateSchema);
@@ -31,6 +49,15 @@ router.patch('/:username', ensureCorrectUser, async (req, res, next) => {
     }
 });
 
+/*
+    DELETE users/:username
+
+    deletes a user based on given username
+
+    returns: {deleted: :username}
+
+    Authorization: same user as :username
+*/
 router.delete('/:username', ensureCorrectUser, async (req, res, next) => {
     try {
         await User.remove(req.params.username);
@@ -40,6 +67,15 @@ router.delete('/:username', ensureCorrectUser, async (req, res, next) => {
     }
 });
 
+/*
+    POST /users/:username/recipes/:id
+
+    saves a recipe to user given username and recipeId
+
+    returns: {saved: recipeId}
+
+    Authorization: same user as :username
+*/
 router.post('/:username/recipes/:id', ensureCorrectUser, async (req, res, next) => {
     try {
         const recipeId = +req.params.id;
@@ -50,6 +86,15 @@ router.post('/:username/recipes/:id', ensureCorrectUser, async (req, res, next) 
     }
 });
 
+/*
+    POST /users/:username/cocktails/:id
+
+    saves a cocktail to user given username and cocktailId
+
+    returns: {saved: cocktailId}
+
+    Authorization: same user as :username
+*/
 router.post('/:username/cocktails/:id', ensureCorrectUser, async (req, res, next) => {
     try {
         const cocktailId = +req.params.id;

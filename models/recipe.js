@@ -2,6 +2,15 @@ const db = require('../db');
 const { NotFoundError, BadRequestError } = require('../expressError');
 
 class Recipe {
+    /*
+        Create a recipe, update db, return new recipe
+
+        data: {id, name, instructions, img_url}
+
+        returns: {id, name, instructions, img_url}
+
+        throws BadRequestError if recipe already exists
+    */
     static async create (data) {
         const duplicateCheck = await db.query(`SELECT name FROM recipes WHERE name = $1`, [data.name]);
         if (duplicateCheck.rows[0]) throw new BadRequestError(`Duplicate Recipe: ${data.name}`);
@@ -16,6 +25,13 @@ class Recipe {
         return recipe;
     }
 
+    /*
+        Get a single recipe given it's id, returns recipe data
+
+        returns {id, name, instructions, img_url}
+
+        throws NotFoundError if recipe doesn't exist
+    */
     static async get (id) {
         const recipeRes = await db.query(`SELECT id, name, instructions, img_url FROM recipes WHERE id = $1`, [id]);
         const recipe = recipeRes.rows[0];
@@ -25,6 +41,11 @@ class Recipe {
         return recipe;
     }
 
+    /*
+        Delete a recipe given it's id
+
+        throws NotFoundError if recipe doesn't exist
+    */
     static async remove (id) {
         const res = await db.query(`DELETE FROM recipes WHERE id = $1 RETURNING id`, [id]);
         const recipe = res.rows[0];

@@ -7,6 +7,14 @@ const { ensureLoggedIn } = require('../middleware/auth');
 
 const router = new express.Router();
 
+/*
+    POST /recipes
+
+    body data should be: {id, name, instructions, img_url}
+    returns: {id, name, instructions, img_url}
+
+    Authorization: user logged in
+*/
 router.post('/', ensureLoggedIn, async (req, res, next) => {
     try {
         const validator = jsonschema.validate(req.body, recipeNewSchema);
@@ -22,6 +30,14 @@ router.post('/', ensureLoggedIn, async (req, res, next) => {
     }
 });
 
+/*
+    GET /recipes/:id
+
+    gets a recipe based on given id
+    returns: {id, name, instructions, img_url}
+
+    Authorization: user logged in
+*/
 router.get('/:id', ensureLoggedIn, async (req, res, next) => {
     try {
         const recipe = await Recipe.get(req.params.id);
@@ -31,6 +47,14 @@ router.get('/:id', ensureLoggedIn, async (req, res, next) => {
     }
 });
 
+/*
+    DELETE /recipes/:id
+
+    deletes a recipe based on given id
+    returns: {deleted: recipeId}
+
+    Authorization: user logged in
+*/
 router.delete('/:id', ensureLoggedIn, async (req, res, next) => {
     try {
         await Recipe.remove(req.params.id);

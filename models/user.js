@@ -5,6 +5,13 @@ const { BCRYPT_WORK_FACTOR } = require('../config');
 const { sqlPartialUpdate } = require('../helpers/sql'); 
 
 class User {
+    /*
+        authenticate user given username & password
+
+        returns {username, firstName, lastName, email}
+
+        throws UnauthorizedError if username & password don't match in database
+    */
     static async authenticate (username, password) {
         const res = await db.query(
             `SELECT username, 
@@ -28,6 +35,15 @@ class User {
         throw new UnauthorizedError("Invalid username/password");
     }
 
+    /*
+        register new user given data
+
+        data: {username, password, firstName, lastName, email}
+
+        returns: {username, firstName, lastName, email}
+
+        throws BadRequestError if username is already taken
+    */
     static async register ({username, password, firstName, lastName, email}) {
         const duplicateCheck = await db.query(
             `SELECT username 
@@ -51,6 +67,15 @@ class User {
         return user;
     }
 
+    /*
+        gets a user based on given username
+
+        returns {id, username, firstName, lastName, email, savedRecipes, savedCocktails}
+            savedRecipes = [recipe ids]
+            savedCocktails = [cocktail ids]
+        
+        throws NotFoundError if username doesn't exist
+    */
     static async get (username) {
         const userQuery = await db.query (
             `SELECT id, username, first_name AS "firstName", last_name AS "lastName", email
@@ -61,14 +86,28 @@ class User {
         if (!user) throw new NotFoundError(`No User: ${username}`);
 
         const savedRecipesQuery = await db.query(`SELECT recipe_id FROM saved_recipes WHERE user_id = $1`, [user.id]);
-        user.saved_recipes = savedRecipesQuery.rows.map(r => r.recipe_id);
+        user.savedRecipes = savedRecipesQuery.rows.map(r => r.recipe_id);
 
         const savedCocktailsQuery = await db.query(`SELECT cocktail_id FROM saved_cocktails WHERE user_id = $1`, [user.id]);
-        user.saved_cocktails = savedCocktailsQuery.rows.map(c => c.cocktail_id);
+        user.savedCocktails = savedCocktailsQuery.rows.map(c => c.cocktail_id);
 
         return user;
     }
 
+    /*
+        updates user based on username and given data
+
+        this is a partial update, so you don't need to supply all fields for the given data.
+        it will only change the given fields
+
+        data can include: {firstName, lastName, email}
+        data must include: {password} for security reasons
+
+        returns: {username, firstName, lastName, email}
+
+        throws NotFoundError if username doesn't exist
+        throws UnauthorizedError if given password doesn't match user's password
+    */
     static async update (username, userData) {
         const userPassword = await db.query(`SELECT password FROM users WHERE username = $1`, [username]);
         if (userPassword.rows.length == 0) throw new NotFoundError(`No user: ${username}`);
@@ -98,12 +137,18 @@ class User {
         return user;
     }
 
+    /*
+        Delete user from database given username
+    */
     static async remove (username) {
         let result = await db.query(`DELETE FROM users WHERE username = $1 RETURNING username`, [username])
         const user = result.rows[0];
         if (!user) throw new NotFoundError(`No user: ${username}`);
     }
 
+    /*
+        save a recipe to user given username and recipeId
+    */
     static async saveRecipe (username, recipeId) {
         const recipePreCheck = await db.query(`SELECT id FROM recipes WHERE id = $1`, [recipeId])
         const recipe = recipePreCheck.rows[0];
@@ -116,6 +161,9 @@ class User {
         await db.query(`INSERT INTO saved_recipes (user_id, recipe_id) VALUES ($1, $2)`, [user.id, recipeId]);
     }
 
+    /*
+        save a cocktail to user given username and cocktailId
+    */
     static async saveCocktail(username, cocktailId) {
         const cocktailPreCheck = await db.query(`SELECT id FROM cocktails WHERE id = $1`, [cocktailId]);
         const cocktail = cocktailPreCheck.rows[0];

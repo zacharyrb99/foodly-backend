@@ -7,6 +7,14 @@ const { ensureLoggedIn } = require("../middleware/auth");
 
 const router = new express.Router();
 
+/*
+    POST /cocktails
+
+    body data should be: {id, name, instructions, img_url}
+    returns: {id, name, instructions, img_url}
+
+    Authorization: user logged in
+*/
 router.post('/', ensureLoggedIn, async (req, res, next) => {
     try {
         const validator = jsonschema.validate(req.body, cocktailNewSchema);
@@ -22,6 +30,14 @@ router.post('/', ensureLoggedIn, async (req, res, next) => {
     }
 });
 
+/*
+    GET /cocktails/:id
+
+    gets a cocktail based on given id
+    returns: {id, name, instructions, img_url}
+
+    Authorization: user logged in
+*/
 router.get('/:id', ensureLoggedIn, async (req, res, next) => {
     try {
         const cocktail = await Cocktail.get(req.params.id);
@@ -31,6 +47,14 @@ router.get('/:id', ensureLoggedIn, async (req, res, next) => {
     }
 });
 
+/*
+    DELETE /cocktails/:id
+
+    deletes a cocktail based on given id
+    returns: {deleted: cocktailId}
+
+    Authorization: user logged in
+*/
 router.delete('/:id', ensureLoggedIn, async (req, res, next) => {
     try {
         await Cocktail.remove(req.params.id);

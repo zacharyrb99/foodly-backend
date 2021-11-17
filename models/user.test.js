@@ -82,8 +82,8 @@ describe("get", () => {
             firstName: "test",
             lastName: "user1",
             email: "u1@gmail.com",
-            saved_recipes: [1],
-            saved_cocktails: []
+            savedRecipes: [1],
+            savedCocktails: []
         });
     });
 
