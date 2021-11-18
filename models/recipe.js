@@ -40,18 +40,6 @@ class Recipe {
 
         return recipe;
     }
-
-    /*
-        Delete a recipe given it's id
-
-        throws NotFoundError if recipe doesn't exist
-    */
-    static async remove (id) {
-        const res = await db.query(`DELETE FROM recipes WHERE id = $1 RETURNING id`, [id]);
-        const recipe = res.rows[0];
-
-        if(!recipe) throw new NotFoundError(`No recipe with id: ${id}`);
-    }
 }
 
 module.exports = Recipe;

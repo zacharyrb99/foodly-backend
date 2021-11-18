@@ -197,6 +197,37 @@ describe("save recipe", () => {
     });
 });
 
+// DELETE SAVED RECIPE ************************************************************************************
+describe("delete saved recipe", () => {
+    test("works", async () => {
+        const preCheck = await db.query("SELECT * FROM saved_recipes WHERE user_id = $1", [testUserIds[0]]);
+        expect(preCheck.rows.length).toEqual(1);
+
+        await User.removeSavedRecipe("u1", testRecipeIds[0]);
+
+        const postCheck = await db.query("SELECT * FROM saved_recipes WHERE user_id = $1", [testUserIds[0]]);
+        expect(postCheck.rows.length).toEqual(0);
+    });
+
+    test("not found for no such recipe", async () => {
+        try {
+            await User.removeSavedRecipe("u1", 0);
+            fail();
+        } catch (e) {
+            expect(e instanceof NotFoundError).toBeTruthy();
+        }
+    });
+
+    test("not found for no such user", async () => {
+        try {
+            await User.removeSavedRecipe("wrongUsername", testCocktailIds[0]);
+            fail();
+        } catch (e) {
+            expect(e instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});
+
 // SAVE COCKTAIL ************************************************************************************
 
 describe("save cocktail", () => {
@@ -221,6 +252,37 @@ describe("save cocktail", () => {
     test("not found for no such user", async () => {
         try {
             await User.saveRecipe("wrongUsername", testCocktailIds[0]);
+            fail();
+        } catch (e) {
+            expect(e instanceof NotFoundError).toBeTruthy();
+        }
+    });
+});
+
+// DELETE SAVED COCKTAIL ************************************************************************************
+describe("delete saved cocktail", () => {
+    test("works", async () => {
+        const preCheck = await db.query("SELECT * FROM saved_cocktails WHERE user_id = $1", [testUserIds[1]]);
+        expect(preCheck.rows.length).toEqual(1);
+
+        await User.removeSavedCocktail("u2", testCocktailIds[0]);
+
+        const postCheck = await db.query("SELECT * FROM saved_cocktails WHERE user_id = $1", [testUserIds[1]]);
+        expect(postCheck.rows.length).toEqual(0);
+    });
+
+    test("not found for no such cocktail", async () => {
+        try {
+            await User.removeSavedCocktail("u2", 0);
+            fail();
+        } catch (e) {
+            expect(e instanceof NotFoundError).toBeTruthy();
+        }
+    });
+
+    test("not found for no such user", async () => {
+        try {
+            await User.removeSavedCocktail("wrongUsername", testCocktailIds[0]);
             fail();
         } catch (e) {
             expect(e instanceof NotFoundError).toBeTruthy();

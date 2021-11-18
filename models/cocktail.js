@@ -40,18 +40,6 @@ class Cocktail {
 
         return cocktail;
     }
-
-    /*
-        Delete a cocktail given it's id
-
-        throws NotFoundError if cocktail doesn't exist
-    */
-    static async remove (id) {
-        const res = await db.query(`DELETE FROM cocktails WHERE id = $1 RETURNING id`, [id]);
-        const cocktail = res.rows[0];
-
-        if(!cocktail) throw new NotFoundError(`No cocktail with id: ${id}`);
-    }
 }
 
 module.exports = Cocktail;

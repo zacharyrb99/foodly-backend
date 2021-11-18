@@ -57,25 +57,3 @@ describe("get", () => {
         }
     });
 });
-
-// REMOVE ********************************************
-describe("remove", () => {
-    test("works", async () => {
-        const preDelete = await db.query(`SELECT * FROM cocktails WHERE id = 1`);
-        expect(preDelete.rows.length).toEqual(1);
-
-        await Cocktail.remove(1);
-
-        const postDelete = await db.query(`SELECT * FROM cocktails WHERE id = 1`);
-        expect(postDelete.rows.length).toEqual(0);
-    });
-
-    test("not found for no such id", async () => {
-        try {
-            await Cocktail.remove(0);
-            fail();
-        } catch (e) {
-            expect(e instanceof NotFoundError).toBeTruthy();
-        }
-    });
-});

@@ -47,21 +47,4 @@ router.get('/:id', ensureLoggedIn, async (req, res, next) => {
     }
 });
 
-/*
-    DELETE /recipes/:id
-
-    deletes a recipe based on given id
-    returns: {deleted: recipeId}
-
-    Authorization: user logged in
-*/
-router.delete('/:id', ensureLoggedIn, async (req, res, next) => {
-    try {
-        await Recipe.remove(req.params.id);
-        return res.json({ deleted: +req.params.id });
-    } catch (e) {
-        return next(e);
-    }
-});
-
 module.exports = router;

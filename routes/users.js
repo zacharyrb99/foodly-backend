@@ -87,6 +87,25 @@ router.post('/:username/recipes/:id', ensureCorrectUser, async (req, res, next) 
 });
 
 /*
+    DELETE /users/:username/recipes/:id
+
+    removes a previously saved recipe given username and recipeId
+
+    returns: {saved: recipeId}
+
+    Authorization: same user as :username
+*/
+router.delete("/:username/recipes/:id", ensureCorrectUser, async (req, res, next) => {
+    try {
+        const recipeId = +req.params.id;
+        await User.removeSavedCocktail(req.params.username, recipeId);
+        return res.json({removed: recipeId});
+    } catch (e) {
+        return next(e);
+    }
+});
+
+/*
     POST /users/:username/cocktails/:id
 
     saves a cocktail to user given username and cocktailId
@@ -100,6 +119,25 @@ router.post('/:username/cocktails/:id', ensureCorrectUser, async (req, res, next
         const cocktailId = +req.params.id;
         await User.saveCocktail(req.params.username, cocktailId);
         return res.json({saved: cocktailId});
+    } catch (e) {
+        return next(e);
+    }
+});
+
+/*
+    DELETE /users/:username/cocktails/:id
+
+    removes a previously saved cocktail given username and cocktailId
+
+    returns: {saved: cocktailId}
+
+    Authorization: same user as :username
+*/
+router.delete("/:username/cocktails/:id", ensureCorrectUser, async (req, res, next) => {
+    try {
+        const cocktailId = +req.params.id;
+        await User.removeSavedCocktail(req.params.username, cocktailId);
+        return res.json({removed: cocktailId});
     } catch (e) {
         return next(e);
     }

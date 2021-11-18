@@ -69,25 +69,3 @@ describe("GET /recipes/:id", () => {
         expect(resp.statusCode).toEqual(404);
     });
 });
-
-// DELETE /recipes/:id **********************************************
-describe("DELETE /recipes/:id", () => {
-    test("works", async () => {
-        const resp = await request(app).delete("/recipes/1").set("authorization", `Bearer ${u1Token}`);
-        
-        expect(resp.statusCode).toEqual(200);
-        expect(resp.body).toEqual({deleted: 1})
-    });
-
-    test("unauth for anon user", async () => {
-        const resp = await request(app).delete("/recipes/1");
-
-        expect(resp.statusCode).toEqual(401);
-    });
-
-    test("not found for no such cocktail", async () => {
-        const resp = await request(app).delete("/recipes/0").set("authorization", `Bearer ${u1Token}`);
-
-        expect(resp.statusCode).toEqual(404);
-    });
-});

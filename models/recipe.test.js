@@ -57,25 +57,3 @@ describe("get", () => {
         }
     });
 });
-
-// REMOVE **************************************************
-describe("remove", () => {
-    test("works", async () => {
-        const preDelete = await db.query(`SELECT * FROM recipes WHERE id = 1`);
-        expect(preDelete.rows.length).toEqual(1);
-
-        await Recipe.remove(1);
-
-        const postDelete = await db.query(`SELECT * FROM recipes WHERE id = 1`);
-        expect(postDelete.rows.length).toEqual(0);
-    });
-
-    test("not found for no such id", async () => {
-        try {
-            await Recipe.remove(0);
-            fail();
-        } catch (e) {
-            expect(e instanceof NotFoundError).toBeTruthy();
-        }
-    });
-});

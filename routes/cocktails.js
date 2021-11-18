@@ -47,21 +47,4 @@ router.get('/:id', ensureLoggedIn, async (req, res, next) => {
     }
 });
 
-/*
-    DELETE /cocktails/:id
-
-    deletes a cocktail based on given id
-    returns: {deleted: cocktailId}
-
-    Authorization: user logged in
-*/
-router.delete('/:id', ensureLoggedIn, async (req, res, next) => {
-    try {
-        await Cocktail.remove(req.params.id);
-        return res.json({ deleted: +req.params.id });
-    } catch (e) {
-        return next(e);
-    }
-});
-
 module.exports = router;

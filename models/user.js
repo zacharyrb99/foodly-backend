@@ -156,9 +156,24 @@ class User {
 
         const userPreCheck = await db.query(`SELECT id FROM users WHERE username = $1`, [username]);
         const user = userPreCheck.rows[0];
-        if (!user) throw new NotFoundError(`No user with id: ${username}`);
+        if (!user) throw new NotFoundError(`No user with username: ${username}`);
 
         await db.query(`INSERT INTO saved_recipes (user_id, recipe_id) VALUES ($1, $2)`, [user.id, recipeId]);
+    }
+
+    /*
+        removes a saved recipe from user
+    */
+    static async removeSavedRecipe(username, recipeId) {
+        const recipePreCheck = await db.query(`SELECT id FROM recipes WHERE id = $1`, [recipeId]);
+        const recipe = recipePreCheck.rows[0];
+        if (!recipe) throw new NotFoundError(`No recipe with id: ${recipeId}`);
+
+        const userPreCheck = await db.query(`SELECT id FROM users WHERE username = $1`, [username]);
+        const user = userPreCheck.rows[0];
+        if (!user) throw new NotFoundError(`No user with username: ${username}`);
+
+        await db.query(`DELETE FROM saved_recipes WHERE user_id = $1 AND recipe_id = $2`, [user.id, recipeId]);
     }
 
     /*
@@ -171,9 +186,24 @@ class User {
 
         const userPreCheck = await db.query(`SELECT id FROM users WHERE username = $1`, [username]);
         const user = userPreCheck.rows[0];
-        if (!user) throw new NotFoundError(`No user with id: ${username}`);
+        if (!user) throw new NotFoundError(`No user with username: ${username}`);
 
         await db.query(`INSERT INTO saved_cocktails (user_id, cocktail_id) VALUES ($1, $2)`, [user.id, cocktailId]);
+    }
+
+    /*
+        removes a saved cocktail from user
+    */
+    static async removeSavedCocktail(username, cocktailId) {
+        const cocktailPreCheck = await db.query(`SELECT id FROM cocktails WHERE id = $1`, [cocktailId]);
+        const cocktail = cocktailPreCheck.rows[0];
+        if (!cocktail) throw new NotFoundError(`No cocktail with id: ${cocktailId}`);
+
+        const userPreCheck = await db.query(`SELECT id FROM users WHERE username = $1`, [username]);
+        const user = userPreCheck.rows[0];
+        if (!user) throw new NotFoundError(`No user with username: ${username}`);
+
+        await db.query(`DELETE FROM saved_cocktails WHERE user_id = $1 AND cocktail_id = $2`, [user.id, cocktailId]);
     }
 }
 

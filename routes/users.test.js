@@ -1,7 +1,7 @@
 const request = require("supertest");
 const app = require("../app");
 const User = require("../models/user");
-const { commonBeforeAll, commonBeforeEach, commonAfterEach, commonAfterAll, u1Token } = require("./_testCommonRoutes");
+const { commonBeforeAll, commonBeforeEach, commonAfterEach, commonAfterAll, u1Token, u2Token } = require("./_testCommonRoutes");
 
 beforeAll(commonBeforeAll);
 beforeEach(commonBeforeEach);
@@ -93,6 +93,62 @@ describe("DELETE /users/:username", () => {
     });
 });
 
+// POST /users/:username/cocktails/:id ************************************
+describe("POST /users/:username/cocktails/:id", () => {
+    test("works", async () => {
+        const resp = await request(app).post("/users/u1/cocktails/2").set("authorization", `Bearer ${u1Token}`);
+
+        expect(resp.statusCode).toEqual(200);
+        expect(resp.body).toEqual({saved: 2}); 
+    });
+
+    test("unauth for anon", async () => {
+        const resp = await request(app).post("/users/u2/cocktails/1");
+
+        expect(resp.statusCode).toEqual(401);
+    });
+
+    test("unauth for not same user", async () => {
+        const resp = await request(app).post("/users/u2/cocktails/1").set("authorization", `Bearer ${u1Token}`);
+
+        expect(resp.statusCode).toEqual(401);
+    });
+
+    test("not found for no such recipe", async () => {
+        const resp = await request(app).post("/users/u1/cocktails/0").set("authorization", `Bearer ${u1Token}`);
+
+        expect(resp.statusCode).toEqual(404);
+    });
+});
+
+// DELETE /users/:username/recipes/:id
+describe("DELETE /users/:username/recipes/:id", () => {
+    test("works", async () => {
+        const resp = await request(app).delete("/users/u1/recipes/1").set("authorization", `Bearer ${u1Token}`);
+        
+        expect(resp.statusCode).toEqual(200);
+        expect(resp.body).toEqual({removed: 1});
+    });
+
+    test("unauth for anon", async () => {
+        const resp = await request(app).delete("/users/u1/recipes/1");
+
+        expect(resp.statusCode).toEqual(401);
+    });
+
+    test("unauth for not same user", async () => {
+        const resp = await request(app).delete("/users/u1/recipes/1").set("authorization", `Bearer ${u2Token}`);
+        
+        expect(resp.statusCode).toEqual(401);
+    });
+
+    test("not found for no such recipe", async () => {
+        const resp = await request(app).delete("/users/u1/recipes/0").set("authorization", `Bearer ${u1Token}`);
+
+        expect(resp.statusCode).toEqual(404);
+    });
+});
+
 // POST /users/:username/recipes/:id ************************************
 describe("POST /users/:username/recipes/:id", () => {
     test("works", async () => {
@@ -144,6 +200,34 @@ describe("POST /users/:username/cocktails/:id", () => {
 
     test("not found for no such recipe", async () => {
         const resp = await request(app).post("/users/u1/cocktails/0").set("authorization", `Bearer ${u1Token}`);
+
+        expect(resp.statusCode).toEqual(404);
+    });
+});
+
+// DELETE /users/:username/cocktails/:id
+describe("DELETE /users/:username/cocktails/:id", () => {
+    test("works", async () => {
+        const resp = await request(app).delete("/users/u2/cocktails/1").set("authorization", `Bearer ${u2Token}`);
+        
+        expect(resp.statusCode).toEqual(200);
+        expect(resp.body).toEqual({removed: 1});
+    });
+
+    test("unauth for anon", async () => {
+        const resp = await request(app).delete("/users/u2/cocktails/1");
+
+        expect(resp.statusCode).toEqual(401);
+    });
+
+    test("unauth for not same user", async () => {
+        const resp = await request(app).delete("/users/u2/cocktails/1").set("authorization", `Bearer ${u1Token}`);
+        
+        expect(resp.statusCode).toEqual(401);
+    });
+
+    test("not found for no such recipe", async () => {
+        const resp = await request(app).delete("/users/u2/cocktails/0").set("authorization", `Bearer ${u2Token}`);
 
         expect(resp.statusCode).toEqual(404);
     });
