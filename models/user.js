@@ -56,6 +56,9 @@ class User {
 
         const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
 
+        firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+        lastName = lastName.charAt(0).toUpperCase() + lastName.slice(1);
+
         const res = await db.query(
             `INSERT INTO users 
             (username, password, first_name, last_name, email)
@@ -115,6 +118,8 @@ class User {
         const passwordCheck = await bcrypt.compare(userData.password, userPassword.rows[0].password)
 
         if (!passwordCheck) throw new UnauthorizedError("Invalid username/password.");
+
+        userData.password = await bcrypt.hash(userData.password, BCRYPT_WORK_FACTOR);
 
         const { setColumns, values } = sqlPartialUpdate(
             userData, 
