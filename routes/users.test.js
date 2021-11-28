@@ -17,8 +17,8 @@ describe("GET /users/username", () => {
         expect(resp.body).toEqual({ user: {
             id: expect.any(Number),
             username: "u1",
-            firstName: "test",
-            lastName: "user1",
+            firstName: "Test",
+            lastName: "User1",
             email: "u1@gmail.com",
             savedRecipes: [1],
             savedCocktails: []
@@ -47,7 +47,7 @@ describe("PATCH /users/:username", () => {
         expect(resp.body).toEqual({ user: {
             username: "u1",
             firstName: "new",
-            lastName: "user1",
+            lastName: "User1",
             email: "u1@gmail.com"
         }});
     });

@@ -45,8 +45,8 @@ describe("authenticate", () => {
 describe("register", () => {
     const newUser = {
         username: "newUser",
-        firstName: "newTest",
-        lastName: "user",
+        firstName: "NewTest",
+        lastName: "User",
         email: "test@gmail.com"
     };
 
