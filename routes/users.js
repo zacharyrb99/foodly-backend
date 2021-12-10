@@ -87,6 +87,26 @@ router.post('/:username/recipes/:id', ensureCorrectUser, async (req, res, next) 
 });
 
 /*
+    DELETE /users/:username/recipes/:id
+
+    unsaves a recipe to user given username and recipeId
+
+    returns: {unsaved: recipeId}
+
+    Authorization: same user as :username
+*/
+router.delete('/:username/recipes/:id', ensureCorrectUser, async (req, res, next) => {
+    try {
+        const recipeId = +req.params.id;
+        const user = await User.get(req.params.username);
+        await User.unsaveRecipe(user.id, recipeId);
+        return res.json({unsaved: recipeId});
+    } catch (e) {
+        return next(e);
+    }
+});
+
+/*
     POST /users/:username/cocktails/:id
 
     saves a cocktail to user given username and cocktailId
@@ -100,6 +120,26 @@ router.post('/:username/cocktails/:id', ensureCorrectUser, async (req, res, next
         const cocktailId = +req.params.id;
         await User.saveCocktail(req.params.username, cocktailId);
         return res.json({saved: cocktailId});
+    } catch (e) {
+        return next(e);
+    }
+});
+
+/*
+    DELETE /users/:username/cocktails/:id
+
+    unsaves a cocktail to user given username and cocktailId
+
+    returns: {unsaved: cocktailId}
+
+    Authorization: same user as :username
+*/
+router.delete('/:username/cocktails/:id', ensureCorrectUser, async (req, res, next) => {
+    try {
+        const cocktailId = +req.params.id;
+        const user = await User.get(req.params.username);
+        await User.unsaveCocktail(user.id, cocktailId);
+        return res.json({unsaved: cocktailId});
     } catch (e) {
         return next(e);
     }

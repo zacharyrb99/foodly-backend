@@ -167,6 +167,17 @@ class User {
     }
 
     /*
+        unsave a recipe to user given userId and recipeId
+    */
+    static async unsaveRecipe (userId, recipeId) {
+        const savedRecipePreCheck = await db.query(`SELECT user_id, recipe_id FROM saved_recipes WHERE user_id = $1 AND recipe_id = $2`, [userId, recipeId])
+        const savedRecipe = savedRecipePreCheck.rows[0];
+        if (!savedRecipe) throw new NotFoundError(`No saved recipe with user_id=${userId} & recipe_id=${recipeId}`);
+
+        await db.query(`DELETE FROM saved_recipes WHERE user_id = $1 AND recipe_id = $2`, [userId, recipeId]);
+    }
+
+    /*
         save a cocktail to user given username and cocktailId
     */
     static async saveCocktail(username, cocktailId) {
@@ -179,6 +190,17 @@ class User {
         if (!user) throw new NotFoundError(`No user with username: ${username}`);
 
         await db.query(`INSERT INTO saved_cocktails (user_id, cocktail_id) VALUES ($1, $2)`, [user.id, cocktailId]);
+    }
+
+    /*
+        unsave a cocktail to user given username and cocktailId
+    */
+    static async unsaveCocktail (userId, cocktailId) {
+        const savedCocktailPreCheck = await db.query(`SELECT user_id, cocktail_id FROM saved_cocktails WHERE user_id = $1 AND cocktail_id = $2`, [userId, cocktailId])
+        const savedCocktail = savedCocktailPreCheck.rows[0];
+        if (!savedCocktail) throw new NotFoundError(`No saved cocktail with user_id=${userId} & cocktail_id=${cocktailId}`);
+
+        await db.query(`DELETE FROM saved_cocktails WHERE user_id = $1 AND cocktail_id = $2`, [userId, cocktailId]);
     }
 }
 
